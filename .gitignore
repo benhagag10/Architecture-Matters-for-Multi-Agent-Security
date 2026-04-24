@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+.env
+.env.local
+
+# Logs and eval outputs
+logs/
+*.eval
+*.eval.gz
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Datasets cached locally
+data/cache/
+*.parquet

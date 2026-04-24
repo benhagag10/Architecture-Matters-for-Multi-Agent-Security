@@ -1,0 +1,24 @@
+# Architecture Matters for Multi-Agent Security — pinned dependencies.
+# Tested with Python 3.11.9 on macOS 14 / Ubuntu 22.04. Python 3.10+ required.
+#
+# Pin floors are the versions verified end-to-end via this release's smoke
+# tests. Newer versions usually work but are not guaranteed.
+
+# ── Core eval framework ──────────────────────────────────────────────────
+inspect-ai>=0.3.179
+
+# ── Model providers (install only what you use) ──────────────────────────
+openai>=2.17.0           # required floor for inspect_ai's OpenAI provider
+anthropic>=0.40
+together>=1.2            # used by the BrowserART HarmBench-style judge
+
+# ── BrowserART ───────────────────────────────────────────────────────────
+playwright>=1.40
+beautifulsoup4>=4.12
+
+# ── OS-Harm + OSWorld (Docker VM) ────────────────────────────────────────
+docker>=7.0
+
+# ── RedCode-Gen + BigCodeBench (sandboxed Python execution via Docker) ───
+datasets>=2.18           # for fetching bigcode/bigcodebench
+huggingface-hub>=0.20
