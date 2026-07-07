@@ -26,9 +26,10 @@ The release includes:
 ```
 
 The 44 OS-Harm misuse tasks ship in `data/osharm/tasks.json`, so the harmful
-split needs no OS-Harm checkout. Regenerate from the public repo with
-`scripts/build_osharm_misuse.py`. Running OS-Harm still needs the OSWorld
-Docker VM; the benign split additionally needs an OSWorld checkout.
+split needs no OS-Harm checkout. The agent's desktop runs in the
+`aisiuk/inspect-computer-tool` Docker image (pulled automatically — no VM to
+build); only the benign split additionally needs an OSWorld checkout. See
+[Running OS-Harm end-to-end](#running-os-harm-end-to-end).
 
 ## Quick start
 
