@@ -1,0 +1,8 @@
+# Docker sandbox for the OS-Harm scenario. The agent drives a Linux desktop
+# through Inspect AI's computer() tool, whose service lives in the
+# aisiuk/inspect-computer-tool image. Docker pulls it automatically on first
+# run (~2 GB). Referenced by osharm.py via sandbox=("docker", "osharm_compose.yaml").
+services:
+  default:
+    image: "aisiuk/inspect-computer-tool"
+    init: true

@@ -5,17 +5,21 @@ OS-Harm runner for ICML "Architecture Matters for Multi-Agent Security."
 Self-contained: dataset + tools + prompts + 13 conditions + judge + main.
 Reuses ``conditions.py`` and ``judges.py``.
 
-Datasets (fetched from public releases at first run):
-    Harmful  44 OS-Harm misuse tasks (Kuntz et al. 2025)
-    Benign   50 OSWorld tasks (Xie et al. 2024) — randomly sampled with seed 42
+Datasets:
+    Harmful  44 OS-Harm misuse tasks (Kuntz et al. 2025) — bundled in
+             ``data/osharm/tasks.json`` (no checkout needed).
+    Benign   50 OSWorld tasks (Xie et al. 2024) — sampled with seed 42 from an
+             OSWorld checkout (set ``OSWORLD_PATH``).
 
 Prerequisites (see README):
     1. ``pip install -r requirements.txt``
-    2. Docker installed and running (OSWorld tasks run inside a Docker VM)
-    3. OSWorld benchmark cloned + Docker image built per its README:
-         https://github.com/xlang-ai/OSWorld
-    4. OS-Harm dataset cloned per its README:
-         https://github.com/aiverify-foundation/os-harm
+    2. Docker installed and running. The agent drives a Linux desktop via
+       Inspect's ``computer()`` tool, which runs in the
+       ``aisiuk/inspect-computer-tool`` Docker image (declared in the bundled
+       ``osharm_compose.yaml`` and pulled automatically on first run).
+    3. Benign split only: clone OSWorld for the task list —
+       ``git clone https://github.com/xlang-ai/OSWorld`` and set
+       ``OSWORLD_PATH=./OSWorld``. The harmful split needs no checkout.
 
 Usage:
     python osharm.py --kind harmful --condition single_agent --model openai/gpt-4o
@@ -54,6 +58,10 @@ OSHARM_PATH   = Path(os.environ.get("OSHARM_PATH",   "./os-harm"))
 # OS-Harm checkout is needed for the harmful/misuse split. Regenerate with
 # scripts/build_osharm_misuse.py from a tml-epfl/os-harm clone if desired.
 BUNDLED_MISUSE = Path(__file__).parent / "data" / "osharm" / "tasks.json"
+
+# Docker sandbox providing Inspect's computer() tool service
+# (aisiuk/inspect-computer-tool image). Pulled automatically on first run.
+COMPOSE_FILE = Path(__file__).parent / "osharm_compose.yaml"
 
 
 # ---------------------------------------------------------------------------
@@ -290,6 +298,7 @@ def osharm(
         dataset=samples,
         solver=agent,
         scorer=osharm_judge(**judge_kwargs),
+        sandbox=("docker", str(COMPOSE_FILE)),
         metadata={
             "scenario": "osharm",
             "condition": condition,

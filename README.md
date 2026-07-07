@@ -83,9 +83,41 @@ python -c "from conditions import list_conditions; print('\n'.join(list_conditio
 | Scenario | Needs |
 |---|---|
 | **BrowserART** | `OPENAI_API_KEY` (agent), `TOGETHER_API_KEY` (BrowserART judge), Playwright + Chromium. The local site server (BrowserART hbb sites) must be reachable; see [BrowserART repo](https://github.com/MichaelKohlPro/BrowserART) for the bundled docker-compose. |
-| **OS-Harm**    | `OPENAI_API_KEY`, Docker running. The 44 misuse (harmful) tasks are bundled — no checkout needed. The benign split needs an OSWorld checkout (`OSWORLD_PATH=`); running either split needs the OSWorld Docker VM. Override the bundled misuse set with `OSHARM_PATH=` (must contain `data/misuse/tasks.json`). |
+| **OS-Harm**    | `OPENAI_API_KEY`, Docker running. The agent drives a Linux desktop via Inspect's `computer()` tool, which runs in the `aisiuk/inspect-computer-tool` image — **pulled automatically on first run** (~2 GB), no VM to build. The 44 misuse (harmful) tasks are bundled, so `--kind harmful` works out of the box. `--kind benign` additionally needs `git clone https://github.com/xlang-ai/OSWorld` + `export OSWORLD_PATH=./OSWorld` (used only for the benign task list). See **Running OS-Harm** below. |
 | **RedCode-Gen**| `OPENAI_API_KEY`. Code execution runs inside Inspect's `python` sandbox (Docker recommended). |
 | **BigCodeBench**| `OPENAI_API_KEY`, plus `pip install datasets` to fetch `bigcode/bigcodebench` from HuggingFace on first use. |
+
+## Running OS-Harm end-to-end
+
+OS-Harm's agent operates a real Linux desktop through Inspect's `computer()`
+tool. That tool runs inside the `aisiuk/inspect-computer-tool` Docker image —
+**there is no OSWorld VM to build.** The bundled `osharm_compose.yaml` wires it
+up and Docker pulls the image (~2 GB) automatically on first run.
+
+**Harmful split — works with no checkout** (the 44 misuse tasks are bundled):
+```bash
+export OPENAI_API_KEY=sk-...
+# make sure Docker is running; optionally pre-pull the image:
+docker pull aisiuk/inspect-computer-tool
+
+python osharm.py --smoke --condition single_agent --kind harmful          # 3-sample smoke
+python osharm.py --condition single_agent --kind harmful --model openai/gpt-4o   # full 44
+```
+
+**Benign split — additionally needs the OSWorld task list:**
+```bash
+git clone https://github.com/xlang-ai/OSWorld
+export OSWORLD_PATH=./OSWorld
+python osharm.py --condition single_agent --kind benign --model openai/gpt-4o
+```
+
+Notes:
+- The OS-Harm judge defaults to `openai/gpt-4.1` (override with `--judge-model`),
+  so `OPENAI_API_KEY` covers both the agent and the judge.
+- The first run is slow while Docker pulls the desktop image; later runs reuse it.
+- Regenerate the bundled misuse set from the public repo any time with
+  `python scripts/build_osharm_misuse.py ./os-harm` (after cloning
+  `https://github.com/tml-epfl/os-harm`).
 
 ## Judges (Appendix B.6)
 
@@ -135,10 +167,14 @@ python bigcodebench.py --smoke --condition single_agent
 ## What this release includes
 
 - **Includes:** all 13 condition definitions, all 3 judges, all 4 scenario
-  runners, the BrowserART + RedCode-Gen task data (public benchmarks),
-  end-to-end orchestration via Inspect AI.
-- **Does not include:** the OSWorld VM image (clone [the OSWorld repo](https://github.com/xlang-ai/osworld) and
-  build per its README), or existing run logs.
+  runners, the BrowserART + RedCode-Gen + OS-Harm-misuse task data (public
+  benchmarks), the OS-Harm desktop sandbox compose file, and end-to-end
+  orchestration via Inspect AI.
+- **Does not include:** the OSWorld benign task list (clone
+  [OSWorld](https://github.com/xlang-ai/OSWorld) and set `OSWORLD_PATH` — only
+  needed for `osharm.py --kind benign`), or existing run logs. Docker images
+  (`aisiuk/inspect-computer-tool`, `aisiuk/inspect-tool-support`) are pulled
+  automatically on first run.
 
 ## Basic troubleshooting
 
@@ -161,14 +197,21 @@ test without Docker, pass `--sandbox local`. **This is not recommended.**
 #### `SandboxInjectionError: ... Only Linux containers are currently supported`
 Inspect's `python` tool requires Docker to run Linux VMs. If you attempt to use a non-Linux sandbox, you may encounter this error. 
 
-#### `FileNotFoundError: OS-Harm dataset not found at os-harm/data/misuse/tasks.json`
-You haven't cloned the OS-Harm checkout yet. Run:
+#### `PrerequisiteError: The computer tool service was not found in any of the sandboxes`
+OS-Harm's `computer()` tool needs the `aisiuk/inspect-computer-tool` container.
+Make sure Docker is running; the image is pulled automatically on first run
+from the bundled `osharm_compose.yaml`. Pre-pull it with
+`docker pull aisiuk/inspect-computer-tool`.
+
+#### `FileNotFoundError: OSWorld dataset not found at OSWorld/evaluation_examples/test_all.json`
+Only the OS-Harm **benign** split needs OSWorld (for its task list). Run:
 ```bash
-git clone https://github.com/tml-epfl/os-harm
 git clone https://github.com/xlang-ai/OSWorld
-export OSHARM_PATH=./os-harm OSWORLD_PATH=./OSWorld
-# OSHARM_PATH must provide data/misuse/tasks.json (the 44-task misuse manifest).
+export OSWORLD_PATH=./OSWorld
 ```
+The **harmful** split needs no checkout — its 44 tasks are bundled in
+`data/osharm/tasks.json`. To use your own misuse set, set `OSHARM_PATH` to a
+directory containing `data/misuse/tasks.json`.
 
 ### BrowserART smoke test hangs / page loads forever
 The harmful tasks reference `local:*` URLs — you need the BrowserART local
