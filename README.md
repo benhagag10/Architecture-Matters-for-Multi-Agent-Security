@@ -11,10 +11,10 @@ The release includes:
 ├── README.md            ← you are here
 ├── LICENSE              ← MIT
 ├── requirements.txt     ← (Python ≥ 3.10)
-├── check_setup.py       ← run after `pip install` to surface every gotcha
-├── run_all.sh           ← reproduce every paper number, end-to-end
+├── check_setup.py       ← run after `pip install` to find any dependency or setup issues
+├── run_all.sh           ← reproduce every number in the paper
 ├── conditions.py        ← the 13 architectural conditions (Tables 8-10)
-├── judges.py            ← the 3 stage-wise judges (Appendix B.6)
+├── judges.py            ← the scenario-specific judges (Appendix B.6)
 ├── browserart.py        ← BrowserART scenario (100 harmful + 42 benign)
 ├── osharm.py            ← OS-Harm scenario (44 harmful + 50 benign)
 ├── redcode_gen.py       ← RedCode-Gen scenario (160 harmful)
@@ -35,7 +35,7 @@ playwright install chromium                            # for BrowserART
 export OPENAI_API_KEY=sk-...
 export TOGETHER_API_KEY=...                            # for the BrowserART judge
 
-# Pre-flight: surface every prerequisite gotcha at once.
+# Pre-flight:
 python check_setup.py
 
 # Smoke test (3 samples, fast — finishes in ~30s on RedCode-Gen):
@@ -47,7 +47,7 @@ python osharm.py      --condition mesh_delegation  --kind benign  --model openai
 python redcode_gen.py --condition star_specialist  --model openai/gpt-4o
 python bigcodebench.py --condition single_agent    --model openai/gpt-4o --limit 50
 
-# Reproduce *every* paper number:
+# Reproduce all paper numbers for a given model:
 ./run_all.sh openai/gpt-4o 42
 ```
 
@@ -90,8 +90,8 @@ python -c "from conditions import list_conditions; print('\n'.join(list_conditio
 | RedCode-Gen | `openai/gpt-4.1` (RedCode 0/1/5/8/10 rubric)                          | `--judge-model` |
 
 All three return the four-stage outcome (Planning Refusal / Execution
-Refusal / Harmful Action / Harmful Task) so per-sample classifications are
-disjoint and sum to 100% within a row.
+Refusal / Harmful Action / Harmful Task), which are
+disjoint sets.
 
 ## The 13 conditions
 
@@ -131,9 +131,8 @@ python bigcodebench.py --smoke --condition single_agent
 - **Includes:** all 13 condition definitions, all 3 judges, all 4 scenario
   runners, the BrowserART + RedCode-Gen task data (public benchmarks),
   end-to-end orchestration via Inspect AI.
-- **Does not include:** model weights (use whatever provider you have
-  access to), the OSWorld VM image (clone the upstream OSWorld repo and
-  build per its README), or pre-computed run logs.
+- **Does not include:** the OSWorld VM image (clone [the OSWorld repo](https://github.com/xlang-ai/osworld) and
+  build per its README), or existing run logs.
 
 ## Basic troubleshooting
 
@@ -146,20 +145,15 @@ You have an older `openai`. Run `pip install --upgrade openai` (or re-run
 ### `PrerequisiteError: ERROR: Unable to initialise Together client. No TOGETHER_API_KEY defined`
 Only the BrowserART judge needs Together. Either:
 - `export TOGETHER_API_KEY=...`, or
-- `export BROWSERART_JUDGE_MODEL=openai/gpt-4.1` to swap the judge to GPT-4.1
-  (matches the InspectMAS default; differs from the paper's stated model).
+- `export BROWSERART_JUDGE_MODEL=openai/gpt-4.1` to swap the judge to GPT-4.1 (or other model, as desired).
 
 ### `ProcessLookupError: No sandbox environment has been provided`
 The agent tried to invoke a sandbox-backed tool (Python / bash) but the Task
 has no sandbox declared. The runners default to `sandbox="docker"`. To
-test without Docker, pass `--sandbox local` (only safe for trusted code —
-the RedCode-Gen dataset *contains malware* by design).
+test without Docker, pass `--sandbox local`. **This is not recommended.**
 
 ### `SandboxInjectionError: ... Only Linux containers are currently supported`
-Inspect's `python` tool requires Docker on a Linux host. On macOS, only the
-single-agent and star-topology paths can be smoke-tested without Docker; the
-mesh / specialist paths that actually call `python` need Docker. Use any
-Linux machine (cloud VM, codespace, etc.) for full sweeps.
+Inspect's `python` tool requires Docker to run Linux VMs. If you attempt to use a non-Linux sandbox, you may encounter this error. 
 
 ### `FileNotFoundError: OS-Harm dataset not found at os-harm/data/misuse/tasks.json`
 You haven't cloned the OS-Harm checkout yet. Run:
@@ -171,7 +165,7 @@ export OSHARM_PATH=./os-harm OSWORLD_PATH=./OSWorld
 
 ### BrowserART smoke test hangs / page loads forever
 The harmful tasks reference `local:*` URLs — you need the BrowserART local
-site server running. See [the upstream BrowserART repo](https://github.com/MichaelKohlPro/BrowserART)
+site server running. See [the BrowserART repo](https://github.com/MichaelKohlPro/BrowserART)
 for the bundled `docker-compose.yml`.
 
 ## License
