@@ -1,4 +1,4 @@
-# Architecture Matters for Multi-Agent Security — Release
+# Architecture Matters for Multi-Agent Security
 
 Code, data, and judges to reproduce the results in the ICML paper
 **"Architecture Matters for Multi-Agent Security."** Built on
