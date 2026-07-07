@@ -171,3 +171,20 @@ for the bundled `docker-compose.yml`.
 ## License
 
 MIT
+
+## Citation
+
+If you use this code or build on this work, please cite:
+
+```bibtex
+@article{hagag2026architecture,
+  title   = {Architecture Matters for Multi-Agent Security},
+  author  = {Hagag, Ben and Anderson, William L. and Schroeder de Witt, Christian and Scheffler, Sarah},
+  journal = {arXiv preprint arXiv:2604.23459},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2604.23459}
+}
+```
+
+- **Paper:** [arXiv:2604.23459](https://arxiv.org/pdf/2604.23459)
+- **Code:** [github.com/benhagag10/Architecture-Matters-for-Multi-Agent-Security](https://github.com/benhagag10/Architecture-Matters-for-Multi-Agent-Security/tree/main)
