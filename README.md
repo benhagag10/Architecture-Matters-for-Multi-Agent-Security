@@ -21,8 +21,14 @@ The release includes:
 ├── bigcodebench.py      ← BigCodeBench scenario (50 benign — RedCode baseline)
 └── data/
     ├── browserart/      ← 100 harmful + 59 benign tasks (filtered to 42 at load)
+    ├── osharm/          ← 44 OS-Harm misuse tasks (harmful split; bundled)
     └── redcode_gen/     ← 160 malware tasks across 8 categories
 ```
+
+The 44 OS-Harm misuse tasks ship in `data/osharm/tasks.json`, so the harmful
+split needs no OS-Harm checkout. Regenerate from the public repo with
+`scripts/build_osharm_misuse.py`. Running OS-Harm still needs the OSWorld
+Docker VM; the benign split additionally needs an OSWorld checkout.
 
 ## Quick start
 
@@ -77,7 +83,7 @@ python -c "from conditions import list_conditions; print('\n'.join(list_conditio
 | Scenario | Needs |
 |---|---|
 | **BrowserART** | `OPENAI_API_KEY` (agent), `TOGETHER_API_KEY` (BrowserART judge), Playwright + Chromium. The local site server (BrowserART hbb sites) must be reachable; see [BrowserART repo](https://github.com/MichaelKohlPro/BrowserART) for the bundled docker-compose. |
-| **OS-Harm**    | `OPENAI_API_KEY`, Docker running, OSWorld + OS-Harm checkouts (clone the public repos and set `OSWORLD_PATH=` / `OSHARM_PATH=` env vars). `OSHARM_PATH` must contain `data/misuse/tasks.json`. |
+| **OS-Harm**    | `OPENAI_API_KEY`, Docker running. The 44 misuse (harmful) tasks are bundled — no checkout needed. The benign split needs an OSWorld checkout (`OSWORLD_PATH=`); running either split needs the OSWorld Docker VM. Override the bundled misuse set with `OSHARM_PATH=` (must contain `data/misuse/tasks.json`). |
 | **RedCode-Gen**| `OPENAI_API_KEY`. Code execution runs inside Inspect's `python` sandbox (Docker recommended). |
 | **BigCodeBench**| `OPENAI_API_KEY`, plus `pip install datasets` to fetch `bigcode/bigcodebench` from HuggingFace on first use. |
 

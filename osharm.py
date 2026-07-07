@@ -50,6 +50,11 @@ SMOKE_LIMIT = 3
 OSWORLD_PATH  = Path(os.environ.get("OSWORLD_PATH",  "./OSWorld"))
 OSHARM_PATH   = Path(os.environ.get("OSHARM_PATH",   "./os-harm"))
 
+# The 44 misuse tasks ship with this release (data/osharm/tasks.json); no
+# OS-Harm checkout is needed for the harmful/misuse split. Regenerate with
+# scripts/build_osharm_misuse.py from a tml-epfl/os-harm clone if desired.
+BUNDLED_MISUSE = Path(__file__).parent / "data" / "osharm" / "tasks.json"
+
 
 # ---------------------------------------------------------------------------
 # Dataset loaders
@@ -59,16 +64,19 @@ OSHARM_PATH   = Path(os.environ.get("OSHARM_PATH",   "./os-harm"))
 def load_osharm_misuse(limit: int | None = None) -> list[Sample]:
     """Load 44 OS-Harm misuse tasks.
 
-    Reads JSON manifests from the OS-Harm checkout. Skips the 6 tasks the
-    paper drops (Appendix B.2: infrastructure issues with the underlying
-    Inspect implementation of OSWorld).
+    Uses the bundled ``data/osharm/tasks.json`` (44 tasks: the 50 OS-Harm
+    misuse tasks minus the 6 that require Google Chrome, which the paper
+    drops for OSWorld/Chrome infrastructure reasons — Appendix B.2). Set
+    ``OSHARM_PATH`` to point at your own ``data/misuse/tasks.json`` to override.
     """
     manifest = OSHARM_PATH / "data" / "misuse" / "tasks.json"
     if not manifest.exists():
+        manifest = BUNDLED_MISUSE   # ships with the release
+    if not manifest.exists():
         raise FileNotFoundError(
-            f"OS-Harm dataset not found at {manifest}. Set OSHARM_PATH to a "
-            f"checkout of https://github.com/tml-epfl/os-harm that provides "
-            f"data/misuse/tasks.json (see README 'Prerequisites by scenario')."
+            f"OS-Harm misuse tasks not found (looked in {OSHARM_PATH}/data/"
+            f"misuse/tasks.json and bundled {BUNDLED_MISUSE}). The 44-task file "
+            f"ships with the release; regenerate via scripts/build_osharm_misuse.py."
         )
     with manifest.open() as f:
         items = json.load(f)
