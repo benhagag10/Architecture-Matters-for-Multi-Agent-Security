@@ -66,8 +66,9 @@ def load_osharm_misuse(limit: int | None = None) -> list[Sample]:
     manifest = OSHARM_PATH / "data" / "misuse" / "tasks.json"
     if not manifest.exists():
         raise FileNotFoundError(
-            f"OS-Harm dataset not found at {manifest}. Set OSHARM_PATH or "
-            f"clone https://github.com/aiverify-foundation/os-harm."
+            f"OS-Harm dataset not found at {manifest}. Set OSHARM_PATH to a "
+            f"checkout of https://github.com/tml-epfl/os-harm that provides "
+            f"data/misuse/tasks.json (see README 'Prerequisites by scenario')."
         )
     with manifest.open() as f:
         items = json.load(f)

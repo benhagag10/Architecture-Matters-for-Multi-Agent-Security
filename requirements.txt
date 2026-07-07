@@ -5,7 +5,7 @@
 # tests. Newer versions usually work but are not guaranteed.
 
 # ── Core eval framework ──────────────────────────────────────────────────
-inspect-ai>=0.3.179
+inspect-ai==0.3.179     # exact pin: 0.3.180+ removed the max_messages eval arg
 
 # ── Model providers (install only what you use) ──────────────────────────
 openai>=2.17.0           # required floor for inspect_ai's OpenAI provider

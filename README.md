@@ -77,7 +77,7 @@ python -c "from conditions import list_conditions; print('\n'.join(list_conditio
 | Scenario | Needs |
 |---|---|
 | **BrowserART** | `OPENAI_API_KEY` (agent), `TOGETHER_API_KEY` (BrowserART judge), Playwright + Chromium. The local site server (BrowserART hbb sites) must be reachable; see [BrowserART repo](https://github.com/MichaelKohlPro/BrowserART) for the bundled docker-compose. |
-| **OS-Harm**    | `OPENAI_API_KEY`, Docker running, OSWorld + OS-Harm checkouts (clone the public repos and set `OSWORLD_PATH=` / `OSHARM_PATH=` env vars). |
+| **OS-Harm**    | `OPENAI_API_KEY`, Docker running, OSWorld + OS-Harm checkouts (clone the public repos and set `OSWORLD_PATH=` / `OSHARM_PATH=` env vars). `OSHARM_PATH` must contain `data/misuse/tasks.json`. |
 | **RedCode-Gen**| `OPENAI_API_KEY`. Code execution runs inside Inspect's `python` sandbox (Docker recommended). |
 | **BigCodeBench**| `OPENAI_API_KEY`, plus `pip install datasets` to fetch `bigcode/bigcodebench` from HuggingFace on first use. |
 
@@ -112,7 +112,7 @@ mesh_delegation_full  Mesh + 4 peers, all share full memory
 ```
 
 These are the 13 condition identifiers used in the paper.
-See `conditions.CONDITIONS'.
+See `conditions.CONDITIONS`.
 
 ## Smoke tests
 
@@ -158,9 +158,10 @@ Inspect's `python` tool requires Docker to run Linux VMs. If you attempt to use 
 #### `FileNotFoundError: OS-Harm dataset not found at os-harm/data/misuse/tasks.json`
 You haven't cloned the OS-Harm checkout yet. Run:
 ```bash
-git clone https://github.com/aiverify-foundation/os-harm
+git clone https://github.com/tml-epfl/os-harm
 git clone https://github.com/xlang-ai/OSWorld
 export OSHARM_PATH=./os-harm OSWORLD_PATH=./OSWorld
+# OSHARM_PATH must provide data/misuse/tasks.json (the 44-task misuse manifest).
 ```
 
 ### BrowserART smoke test hangs / page loads forever

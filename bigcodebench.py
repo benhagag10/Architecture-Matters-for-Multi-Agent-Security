@@ -13,8 +13,8 @@ Default sample size is 50 (paper-matching). Override with ``--limit N``.
 Prerequisites:
     1. ``pip install -r requirements.txt``
     2. The first run downloads ``bigcode/bigcodebench`` from HuggingFace.
-    3. Test execution runs in a Docker sandbox by default (set
-       ``--no-sandbox`` to run inline; use only for trusted code).
+    3. Test execution runs in a Docker sandbox by default (pass
+       ``--sandbox local`` to run inline; use only for trusted code).
 
 Usage:
     python bigcodebench.py --condition single_agent     --model openai/gpt-4o
@@ -127,7 +127,12 @@ def bigcodebench(
     model: str = "openai/gpt-4o",
     limit: int = DEFAULT_LIMIT,
     seed: int = 42,
+    sandbox: str = "docker",
 ) -> Task:
+    """BigCodeBench Task. Default sandbox is ``docker``; the pass@1 scorer runs
+    the reference unit tests via the sandboxed ``bash`` tool, so a sandbox is
+    required. Pass ``sandbox='local'`` only when smoke-testing trusted code.
+    """
     samples = load_bigcodebench(limit=limit, seed=seed)
     bundle = RG._bundle_for_condition(condition)
     agent = build_agent(condition, model=model, bundle=bundle)
@@ -135,6 +140,7 @@ def bigcodebench(
         dataset=samples,
         solver=agent,
         scorer=bigcodebench_pass_at_1(),
+        sandbox=sandbox,
         metadata={
             "scenario": "bigcodebench",
             "condition": condition,
@@ -159,6 +165,9 @@ def main() -> int:
     parser.add_argument("--max-time", type=int, default=300)
     parser.add_argument("--max-turns", type=int, default=100)
     parser.add_argument("--log-dir", type=Path, default=None)
+    parser.add_argument("--sandbox", default="docker", choices=["docker", "local"],
+                        help="Sandbox for the pass@1 unit-test scorer "
+                             "(default: docker). 'local' is only for smoke testing.")
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
 
@@ -178,6 +187,7 @@ def main() -> int:
             model=args.model,
             limit=args.limit,
             seed=args.seed,
+            sandbox=args.sandbox,
         ),
         model=args.model,
         log_dir=str(log_dir),

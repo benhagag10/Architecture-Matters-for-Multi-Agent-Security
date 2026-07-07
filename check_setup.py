@@ -127,8 +127,8 @@ def check_scenario(name: str, condition: str = "single_agent") -> bool:
                 ok(f"osharm.osharm(...) builds — n_samples={len(t.dataset)}")
             except FileNotFoundError as e:
                 warn(f"osharm requires checkout: {e}")
-                hint("clone https://github.com/aiverify-foundation/os-harm "
-                     "and set OSHARM_PATH=...")
+                hint("clone https://github.com/tml-epfl/os-harm and set "
+                     "OSHARM_PATH=... (must provide data/misuse/tasks.json)")
         elif name == "redcode_gen":
             import redcode_gen as M
             t = M.redcode_gen(condition=condition, limit=1)
