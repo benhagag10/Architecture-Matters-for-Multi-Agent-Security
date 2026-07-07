@@ -138,24 +138,24 @@ python bigcodebench.py --smoke --condition single_agent
 
 Run `python check_setup.py` first — it diagnoses most of these in one shot.
 
-### `inspect_ai._util.error.PrerequisiteError: ERROR: OpenAI API requires at least version 2.17.0 of package openai`
+#### `inspect_ai._util.error.PrerequisiteError: ERROR: OpenAI API requires at least version 2.17.0 of package openai`
 You have an older `openai`. Run `pip install --upgrade openai` (or re-run
 `pip install -r requirements.txt`).
 
-### `PrerequisiteError: ERROR: Unable to initialise Together client. No TOGETHER_API_KEY defined`
+#### `PrerequisiteError: ERROR: Unable to initialise Together client. No TOGETHER_API_KEY defined`
 Only the BrowserART judge needs Together. Either:
 - `export TOGETHER_API_KEY=...`, or
 - `export BROWSERART_JUDGE_MODEL=openai/gpt-4.1` to swap the judge to GPT-4.1 (or other model, as desired).
 
-### `ProcessLookupError: No sandbox environment has been provided`
+#### `ProcessLookupError: No sandbox environment has been provided`
 The agent tried to invoke a sandbox-backed tool (Python / bash) but the Task
 has no sandbox declared. The runners default to `sandbox="docker"`. To
 test without Docker, pass `--sandbox local`. **This is not recommended.**
 
-### `SandboxInjectionError: ... Only Linux containers are currently supported`
+#### `SandboxInjectionError: ... Only Linux containers are currently supported`
 Inspect's `python` tool requires Docker to run Linux VMs. If you attempt to use a non-Linux sandbox, you may encounter this error. 
 
-### `FileNotFoundError: OS-Harm dataset not found at os-harm/data/misuse/tasks.json`
+#### `FileNotFoundError: OS-Harm dataset not found at os-harm/data/misuse/tasks.json`
 You haven't cloned the OS-Harm checkout yet. Run:
 ```bash
 git clone https://github.com/aiverify-foundation/os-harm
@@ -170,4 +170,4 @@ for the bundled `docker-compose.yml`.
 
 ## License
 
-MIT — see `LICENSE`.
+MIT
