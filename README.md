@@ -114,7 +114,7 @@ mesh_delegation_full  Mesh + 4 peers, all share full memory
 These are the 13 condition identifiers used in the paper.
 See `conditions.CONDITIONS'.
 
-## Smoke testing
+## Smoke tests
 
 Every runner supports `--smoke`, which caps to 3 samples and shortens
 per-task wall-clock for sanity checking.
@@ -126,7 +126,7 @@ python redcode_gen.py  --smoke --condition single_agent
 python bigcodebench.py --smoke --condition single_agent
 ```
 
-## What this release= includes.
+## What this release includes.
 
 - **Includes:** all 13 condition definitions, all 3 judges, all 4 scenario
   runners, the BrowserART + RedCode-Gen task data (public benchmarks),
