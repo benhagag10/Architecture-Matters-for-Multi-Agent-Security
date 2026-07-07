@@ -1,17 +1,16 @@
 # Architecture Matters for Multi-Agent Security — Release
 
-Code, data, and judges to reproduce every result in the ICML paper
-**"Architecture Matters for Multi-Agent Security."** Built directly on
-[Inspect AI](https://inspect.ai-safety-institute.org.uk/) — no extra
-framework to install.
+Code, data, and judges to reproduce the results in the ICML paper
+**"Architecture Matters for Multi-Agent Security."** Built on
+UK AISI's [Inspect AI](https://inspect.ai-safety-institute.org.uk/).
 
-The release is **11 files** plus the bundled data:
+The release includes:
 
 ```
 .
 ├── README.md            ← you are here
 ├── LICENSE              ← MIT
-├── requirements.txt     ← pinned floors (Python ≥ 3.10)
+├── requirements.txt     ← (Python ≥ 3.10)
 ├── check_setup.py       ← run after `pip install` to surface every gotcha
 ├── run_all.sh           ← reproduce every paper number, end-to-end
 ├── conditions.py        ← the 13 architectural conditions (Tables 8-10)
@@ -92,7 +91,7 @@ python -c "from conditions import list_conditions; print('\n'.join(list_conditio
 
 All three return the four-stage outcome (Planning Refusal / Execution
 Refusal / Harmful Action / Harmful Task) so per-sample classifications are
-disjoint and sum to ~100% within a row, matching the paper's Tables 1–3.
+disjoint and sum to 100% within a row.
 
 ## The 13 conditions
 
@@ -112,14 +111,13 @@ mesh_delegation_cot   Mesh + 4 peers, each sees its own past CoT
 mesh_delegation_full  Mesh + 4 peers, all share full memory
 ```
 
-These are the only 13 condition identifiers used in the paper.
-`conditions.CONDITIONS` is the source of truth.
+These are the 13 condition identifiers used in the paper.
+See `conditions.CONDITIONS'.
 
 ## Smoke testing
 
 Every runner supports `--smoke`, which caps to 3 samples and shortens
-per-task wall-clock so a full sanity check across all 4 runners takes
-under 10 minutes:
+per-task wall-clock for sanity checking.
 
 ```bash
 python browserart.py   --smoke --condition single_agent --kind harmful
@@ -128,7 +126,7 @@ python redcode_gen.py  --smoke --condition single_agent
 python bigcodebench.py --smoke --condition single_agent
 ```
 
-## What this release does and does not include
+## What this release= includes.
 
 - **Includes:** all 13 condition definitions, all 3 judges, all 4 scenario
   runners, the BrowserART + RedCode-Gen task data (public benchmarks),
@@ -137,7 +135,7 @@ python bigcodebench.py --smoke --condition single_agent
   access to), the OSWorld VM image (clone the upstream OSWorld repo and
   build per its README), or pre-computed run logs.
 
-## Troubleshooting
+## Basic troubleshooting
 
 Run `python check_setup.py` first — it diagnoses most of these in one shot.
 
@@ -170,11 +168,6 @@ git clone https://github.com/aiverify-foundation/os-harm
 git clone https://github.com/xlang-ai/OSWorld
 export OSHARM_PATH=./os-harm OSWORLD_PATH=./OSWorld
 ```
-
-### `ValueError: This score is not a scalar`
-Should not happen with this release — the judges emit scalar `Score.value`.
-If you hit it, you've probably modified `judges.py` to put a non-numeric
-field in the value dict. Move it to `metadata` instead.
 
 ### BrowserART smoke test hangs / page loads forever
 The harmful tasks reference `local:*` URLs — you need the BrowserART local
