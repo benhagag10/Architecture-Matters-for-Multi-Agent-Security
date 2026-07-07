@@ -132,7 +132,7 @@ python redcode_gen.py  --smoke --condition single_agent
 python bigcodebench.py --smoke --condition single_agent
 ```
 
-## What this release includes.
+## What this release includes
 
 - **Includes:** all 13 condition definitions, all 3 judges, all 4 scenario
   runners, the BrowserART + RedCode-Gen task data (public benchmarks),
